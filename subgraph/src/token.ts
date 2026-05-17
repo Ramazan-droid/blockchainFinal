@@ -52,6 +52,6 @@ export function handleDelegateVotesChanged(event: DelegateVotesChanged): void {
   if (!delegate) {
     delegate = new Delegate(delegateId);
   }
-  delegate.votingPower = event.params.newBalance;
+  delegate.votingPower = event.params.newVotes;
   delegate.save();
 }

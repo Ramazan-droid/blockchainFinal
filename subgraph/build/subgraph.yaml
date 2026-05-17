@@ -1,14 +1,14 @@
 specVersion: 0.0.5
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum
     name: GovToken
-    network: sepolia # Change to your targeted network (e.g., holesky, sepolia, arbitrum)
+    network: sepolia
     source:
-      address: "0x4A3D90a0CC9eC9FAde8c61604fE38dd79C832d3a" #address
+      address: "0x4A3D90a0CC9eC9FAde8c61604fE38dd79C832d3a"
       abi: GovToken
-      startBlock: 0 # Optimize by specifying actual deployment block
+      startBlock: 0
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -18,7 +18,7 @@ dataSources:
         - Delegate
       abis:
         - name: GovToken
-          file: ./abis/GovToken.json # Generate using 'forge build' or 'hardhat compile'
+          file: GovToken\GovToken.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -26,13 +26,12 @@ dataSources:
           handler: handleDelegateChanged
         - event: DelegateVotesChanged(indexed address,uint256,uint256)
           handler: handleDelegateVotesChanged
-      file: ./src/token.ts
-
+      file: GovToken\GovToken.wasm
   - kind: ethereum
     name: MyGovernor
     network: sepolia
     source:
-      address: "0x5904e6016f06dEE649883C8F89C77367dEfb3225" #address
+      address: "0x5904e6016f06dEE649883C8F89C77367dEfb3225"
       abi: MyGovernor
       startBlock: 0
     mapping:
@@ -44,7 +43,7 @@ dataSources:
         - Vote
       abis:
         - name: MyGovernor
-          file: ./abis/MyGovernor.json
+          file: MyGovernor\MyGovernor.json
       eventHandlers:
         - event: ProposalCreated(uint256,address,address[],uint256[],string[],bytes[],uint256,uint256,string)
           handler: handleProposalCreated
@@ -58,13 +57,12 @@ dataSources:
           handler: handleVoteCast
         - event: VoteCastWithParams(indexed address,uint256,uint8,uint256,string,bytes)
           handler: handleVoteCastWithParams
-      file: ./src/governor.ts
-
+      file: MyGovernor\MyGovernor.wasm
   - kind: ethereum
     name: TimeLock
     network: sepolia
     source:
-      address: "0x026B0DA2b7990E6eaC1dd06ff5A30E38A8C69BBb" #address
+      address: "0x026B0DA2b7990E6eaC1dd06ff5A30E38A8C69BBb"
       abi: TimeLock
       startBlock: 0
     mapping:
@@ -75,21 +73,21 @@ dataSources:
         - TimelockCall
       abis:
         - name: TimeLock
-          file: ./abis/TimeLock.json
+          file: TimeLock\TimeLock.json
       eventHandlers:
-        - event: CallScheduled(indexed bytes32,indexed uint256,address,uint256,bytes,bytes32,uint256)
+        - event: CallScheduled(indexed bytes32,indexed
+            uint256,address,uint256,bytes,bytes32,uint256)
           handler: handleCallScheduled
         - event: CallExecuted(indexed bytes32,indexed uint256,address,uint256,bytes)
           handler: handleCallExecuted
         - event: Cancelled(indexed bytes32)
           handler: handleCancelled
-      file: ./src/timelock.ts
-
+      file: TimeLock\TimeLock.wasm
   - kind: ethereum
     name: LendingPool
     network: sepolia
     source:
-      address: "0x6c42543705B3D3A71E9FB3ed49dD90651DCDcb06" #address
+      address: "0x6c42543705B3D3A71E9FB3ed49dD90651DCDcb06"
       abi: LendingPool
       startBlock: 0
     mapping:
@@ -100,7 +98,7 @@ dataSources:
         - LendingUser
       abis:
         - name: LendingPool
-          file: ./abis/LendingPool.json
+          file: LendingPool\LendingPool.json
       callHandlers:
         - function: deposit(uint256)
           handler: handleDepositCall
@@ -110,13 +108,12 @@ dataSources:
           handler: handleRepayCall
         - function: liquidate(address,uint256)
           handler: handleLiquidateCall
-      file: ./src/lendingPool.ts
-
+      file: LendingPool\LendingPool.wasm
   - kind: ethereum
     name: SimpleVault
     network: sepolia
     source:
-      address: "0xE820Eba717F5f814B5e7De9BCd9Db8C49824d00e" #contract address
+      address: "0xE820Eba717F5f814B5e7De9BCd9Db8C49824d00e"
       abi: SimpleVault
       startBlock: 0
     mapping:
@@ -128,19 +125,18 @@ dataSources:
         - VaultUser
       abis:
         - name: SimpleVault
-          file: ./abis/SimpleVault.json
+          file: SimpleVault\SimpleVault.json
       eventHandlers:
         - event: Deposit(indexed address,indexed address,uint256,uint256)
           handler: handleVaultDeposit
         - event: Withdraw(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleVaultWithdraw
-      file: ./src/vault.ts
-
+      file: SimpleVault\SimpleVault.wasm
   - kind: ethereum
     name: AMMPair
     network: sepolia
     source:
-      address: "0x0000000000000000000000000000000000000006" # Replace with contract address
+      address: "0x0000000000000000000000000000000000000006"
       abi: AMMPair
       startBlock: 0
     mapping:
@@ -152,7 +148,7 @@ dataSources:
         - AMMPosition
       abis:
         - name: AMMPair
-          file: ./abis/AMMPair.json
+          file: AMMPair\AMMPair.json
       callHandlers:
         - function: addLiquidity(uint256,uint256)
           handler: handleAddLiquidityCall
@@ -160,13 +156,12 @@ dataSources:
           handler: handleSwap0To1Call
         - function: swap1To0(uint256)
           handler: handleSwap1To0Call
-      file: ./src/ammPair.ts
-
+      file: AMMPair\AMMPair.wasm
   - kind: ethereum
     name: PriceOracle
     network: sepolia
     source:
-      address: "0xaB67c7965230E1b18907275565A160F32a32d474" # contract address
+      address: "0xaB67c7965230E1b18907275565A160F32a32d474"
       abi: PriceOracle
       startBlock: 0
     mapping:
@@ -178,7 +173,7 @@ dataSources:
         - PriceRecord
       abis:
         - name: PriceOracle
-          file: ./abis/PriceOracle.json
+          file: PriceOracle\PriceOracle.json
       blockHandlers:
         - handler: handleBlock
-      file: ./src/priceOracle.ts
+      file: PriceOracle\PriceOracle.wasm

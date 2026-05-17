@@ -48,7 +48,7 @@ export function handleProposalQueued(event: ProposalQueued): void {
   let proposal = Proposal.load(event.params.proposalId.toString());
   if (proposal) {
     proposal.status = "QUEUED";
-    proposal.eta = event.params.eta;
+    // proposal.eta = event.params.eta;
     proposal.save();
   }
 }
