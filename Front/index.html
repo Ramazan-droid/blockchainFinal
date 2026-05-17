@@ -6,67 +6,17 @@
     <title>DeFi Super-App</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.0/ethers.umd.min.js"></script>
     <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-        }
-        .card {
-            background-color: #1e1e1e;
-            border: 1px solid #333;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            margin-bottom: 10px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #2c2c2c;
-            border: 1px solid #444;
-            color: white;
-            box-sizing: border-box;
-            border-radius: 4px;
-        }
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .tab-btn {
-            background-color: #333;
-        }
-        .tab-btn.active {
-            background-color: #007bff;
-        }
-        .footer {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-top: 30px;
-        }
+        body { background-color: #121212; color: #ffffff; font-family: Arial, sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 500px; }
+        .card { background-color: #1e1e1e; border: 1px solid #333; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px; width: 100%; margin-bottom: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 10px; background-color: #2c2c2c; border: 1px solid #444; color: white; box-sizing: border-box; border-radius: 4px; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { background-color: #333; }
+        .tab-btn.active { background-color: #007bff; }
+        .footer { text-align: center; color: #666; font-size: 14px; margin-top: 30px; }
+        .subgraph-data { margin-top: 15px; padding: 10px; background-color: #252525; border-radius: 6px; font-size: 0.9em; border-left: 3px solid #007bff; }
     </style>
 </head>
 <body>
@@ -82,45 +32,60 @@
 
         <div class="card">
             <button id="connectBtn">Connect Wallet</button>
-            <p id="walletAddress" style="text-align: center;"></p>
-            <p style="text-align: center; color: #aaa;">Oracle Price: <span id="oraclePrice">0</span> USD</p>
+            <p id="walletAddress" style="text-align: center; font-size: 0.9em; color: #00FF00;"></p>
+            <p style="text-align: center; color: #aaa;">Oracle Price: <span id="oraclePrice">Loading...</span> USD</p>
         </div>
 
         <div id="swapTab" class="card tab-content">
             <h2>Swap</h2>
-            <p>Reserves: <span id="poolReserves">0 / 0</span></p>
+            <p>Your Liquidity: <span id="poolReserves">0 / 0</span></p>
             <select id="swapDirection">
-                <option value="0to1">Token 0 to Token 1</option>
-                <option value="1to0">Token 1 to Token 0</option>
+                <option value="0to1">Collateral to Borrow Token</option>
+                <option value="1to0">Borrow to Collateral Token</option>
             </select>
             <input type="number" id="swapAmount" placeholder="Amount">
             <button id="swapBtn">Swap</button>
+            
+            <div class="subgraph-data">
+                <strong>📈 Network AMM Totals (The Graph)</strong>
+                <div id="subgraphAmmData">Loading global reserves...</div>
+            </div>
         </div>
 
         <div id="lendingTab" class="card tab-content" style="display: none;">
             <h2>Lending</h2>
-            <p>Collateral: <span id="userCollateral">0</span></p>
-            <p>Debt: <span id="userDebt">0</span></p>
+            <p>Your Collateral Balance: <span id="userCollateral">0</span></p>
+            <p>Your Outstanding Debt: <span id="userDebt">0</span></p>
             <input type="number" id="lendingAmount" placeholder="Amount">
-            <button id="depositLendingBtn">Deposit</button>
+            <button id="depositLendingBtn">Deposit Collateral</button>
             <button id="borrowLendingBtn">Borrow</button>
+            
+            <div class="subgraph-data">
+                <strong>🏦 Top Network Borrowers (The Graph)</strong>
+                <div id="subgraphLendingData">Loading top users...</div>
+            </div>
         </div>
 
         <div id="vaultTab" class="card tab-content" style="display: none;">
             <h2>Vault</h2>
             <p>Your Shares: <span id="userShares">0</span></p>
             <input type="number" id="vaultAmount" placeholder="Amount">
-            <button id="vaultDepositBtn">Deposit</button>
+            <button id="vaultDepositBtn">Deposit Asset</button>
         </div>
 
         <div id="govTab" class="card tab-content" style="display: none;">
             <h2>DAO</h2>
-            <p>Votes: <span id="votingPower">0</span></p>
+            <p>Your Voting Power: <span id="votingPower">0</span></p>
             <input type="text" id="proposalId" placeholder="Proposal ID">
             <button id="checkPropBtn">Check Status</button>
-            <p id="propStatus"></p>
+            <p id="propStatus" style="color: #00ced1;"></p>
             <button id="voteForBtn">Vote For</button>
             <button id="voteAgainstBtn">Vote Against</button>
+            
+            <div class="subgraph-data">
+                <strong>📜 Recent Proposals (The Graph)</strong>
+                <div id="subgraphDaoData">Loading proposals...</div>
+            </div>
         </div>
 
         <div class="footer">

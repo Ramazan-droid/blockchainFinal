@@ -133,11 +133,11 @@ dataSources:
           handler: handleVaultWithdraw
       file: SimpleVault\SimpleVault.wasm
   - kind: ethereum
-    name: AMMPair
+    name: AMMFactory
     network: sepolia
     source:
       address: "0xf7739216E54Ce3a8d9bc1BA2C4F2CBf06Cf091d2"
-      abi: AMMPair
+      abi: AMMFactory
       startBlock: 10868400
     mapping:
       kind: ethereum/events
@@ -147,16 +147,14 @@ dataSources:
         - AMMPool
         - AMMPosition
       abis:
+        - name: AMMFactory
+          file: AMMFactory\AMMFactory.json
         - name: AMMPair
-          file: AMMPair\AMMPair.json
-      callHandlers:
-        - function: addLiquidity(uint256,uint256)
-          handler: handleAddLiquidityCall
-        - function: swap0To1(uint256)
-          handler: handleSwap0To1Call
-        - function: swap1To0(uint256)
-          handler: handleSwap1To0Call
-      file: AMMPair\AMMPair.wasm
+          file: AMMFactory\AMMPair.json
+      eventHandlers:
+        - event: PairCreated(indexed address,indexed address,address,uint256)
+          handler: handlePairCreated
+      file: AMMFactory\AMMFactory.wasm
   - kind: ethereum
     name: PriceOracle
     network: sepolia
@@ -177,3 +175,27 @@ dataSources:
       blockHandlers:
         - handler: handleBlock
       file: PriceOracle\PriceOracle.wasm
+templates:
+  - name: AMMPairTemplate
+    kind: ethereum
+    network: sepolia
+    source:
+      abi: AMMPair
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AMMPool
+        - AMMPosition
+      abis:
+        - name: AMMPair
+          file: AMMPairTemplate\AMMPair.json
+      callHandlers:
+        - function: addLiquidity(uint256 amount0, uint256 amount1)
+          handler: handleAddLiquidityCall
+        - function: swap0To1(uint256 amountIn)
+          handler: handleSwap0To1Call
+        - function: swap1To0(uint256 amountIn)
+          handler: handleSwap1To0Call
+      file: templates\AMMPairTemplate\AMMPairTemplate.wasm
