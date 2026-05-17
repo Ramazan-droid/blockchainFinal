@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DeFi Frontend</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+
+    .box {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>DeFi Super App Frontend</h1>
+
+  <button onclick="connectWallet()">Connect MetaMask</button>
+
+  <div class="box">
+    <p><b>Wallet:</b> <span id="wallet">Not connected</span></p>
+  </div>
+
+  <div class="box">
+    <h3>AMM Contract Data</h3>
+    <button onclick="loadContract()">Load Contract Info</button>
+
+    <p>Token0: <span id="token0">-</span></p>
+    <p>Token1: <span id="token1">-</span></p>
+    <p>Reserve0: <span id="r0">-</span></p>
+    <p>Reserve1: <span id="r1">-</span></p>
+  </div>
+
+  <!-- ethers.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+
+  <script>
+    let provider;
+    let signer;
+
+    // 🔴 PUT YOUR CONTRACT ADDRESS HERE
+    const AMM_ADDRESS = "0xYourAMMContractHere";
+
+    // Minimal ABI (match your contract)
+    const ABI = [
+      "function getReserves() view returns (uint112 reserve0, uint112 reserve1)",
+      "function token0() view returns (address)",
+      "function token1() view returns (address)"
+    ];
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("MetaMask not installed!");
+        return;
+      }
+
+      provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = await provider.getSigner();
+
+      const address = await signer.getAddress();
+      document.getElementById("wallet").innerText = address;
+    }
+
+    async function loadContract() {
+      if (!provider) {
+        alert("Connect wallet first");
+        return;
+      }
+
+      const contract = new ethers.Contract(AMM_ADDRESS, ABI, provider);
+
+      try {
+        const token0 = await contract.token0();
+        const token1 = await contract.token1();
+        const reserves = await contract.getReserves();
+
+        document.getElementById("token0").innerText = token0;
+        document.getElementById("token1").innerText = token1;
+        document.getElementById("r0").innerText = reserves[0].toString();
+        document.getElementById("r1").innerText = reserves[1].toString();
+
+      } catch (err) {
+        console.error(err);
+        alert("Error reading contract. Check address / network");
+      }
+    }
+  </script>
+
+</body>
+</html>

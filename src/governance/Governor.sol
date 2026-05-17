@@ -2,14 +2,12 @@
 pragma solidity ^0.8.20;
 
 import "openzeppelin-contracts/contracts/governance/Governor.sol";
-import "openzeppelin-contracts/contracts/governance/extensions/GovernorSettings.sol";
 import "openzeppelin-contracts/contracts/governance/extensions/GovernorCountingSimple.sol";
 import "openzeppelin-contracts/contracts/governance/extensions/GovernorVotes.sol";
 import "openzeppelin-contracts/contracts/governance/extensions/GovernorTimelockControl.sol";
 
 contract MyGovernor is
     Governor,
-    GovernorSettings,
     GovernorCountingSimple,
     GovernorVotes,
     GovernorTimelockControl
@@ -19,63 +17,50 @@ contract MyGovernor is
         TimelockController timelock
     )
         Governor("MyGovernor")
-        GovernorSettings(
-            1 days,
-            7 days,
-            1 ether
-        )
         GovernorVotes(token)
         GovernorTimelockControl(timelock)
     {}
 
     // =========================
-    // REQUIRED OVERRIDES (v5)
+    // CORE PARAMS (inlined → smaller than Settings)
     // =========================
 
-    function votingDelay()
-        public view override(Governor, GovernorSettings)
-        returns (uint256)
-    {
-        return super.votingDelay();
+    function votingDelay() public pure override returns (uint256) {
+        return 1 days;
     }
 
-    function votingPeriod()
-        public view override(Governor, GovernorSettings)
-        returns (uint256)
-    {
-        return super.votingPeriod();
+    function votingPeriod() public pure override returns (uint256) {
+        return 7 days;
     }
 
-    function proposalThreshold()
-        public view override(Governor, GovernorSettings)
-        returns (uint256)
-    {
-        return super.proposalThreshold();
+    function proposalThreshold() public pure override returns (uint256) {
+        return 1 ether;
     }
 
-    function quorum(uint256 blockNumber)
-        public view override
-        returns (uint256)
-    {
+    function quorum(uint256) public pure override returns (uint256) {
         return 4e16; // 4%
     }
 
     // =========================
-    // TIMLOCK REQUIRED OVERRIDES
+    // TIMELock REQUIRED OVERRIDES
     // =========================
 
     function state(uint256 proposalId)
-        public view override(Governor, GovernorTimelockControl)
+        public
+        view
+        override(Governor, GovernorTimelockControl)
         returns (ProposalState)
     {
-        return super.state(proposalId);
+        return GovernorTimelockControl.state(proposalId);
     }
 
     function proposalNeedsQueuing(uint256 proposalId)
-        public view override(Governor, GovernorTimelockControl)
+        public
+        view
+        override(Governor, GovernorTimelockControl)
         returns (bool)
     {
-        return super.proposalNeedsQueuing(proposalId);
+        return GovernorTimelockControl.proposalNeedsQueuing(proposalId);
     }
 
     function _queueOperations(
@@ -85,10 +70,11 @@ contract MyGovernor is
         bytes[] memory calldatas,
         bytes32 descriptionHash
     )
-        internal override(Governor, GovernorTimelockControl)
+        internal
+        override(Governor, GovernorTimelockControl)
         returns (uint48)
     {
-        return super._queueOperations(
+        return GovernorTimelockControl._queueOperations(
             proposalId,
             targets,
             values,
@@ -104,9 +90,10 @@ contract MyGovernor is
         bytes[] memory calldatas,
         bytes32 descriptionHash
     )
-        internal override(Governor, GovernorTimelockControl)
+        internal
+        override(Governor, GovernorTimelockControl)
     {
-        super._executeOperations(
+        GovernorTimelockControl._executeOperations(
             proposalId,
             targets,
             values,
@@ -121,16 +108,24 @@ contract MyGovernor is
         bytes[] memory calldatas,
         bytes32 descriptionHash
     )
-        internal override(Governor, GovernorTimelockControl)
+        internal
+        override(Governor, GovernorTimelockControl)
         returns (uint256)
     {
-        return super._cancel(targets, values, calldatas, descriptionHash);
+        return GovernorTimelockControl._cancel(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
     }
 
     function _executor()
-        internal view override(Governor, GovernorTimelockControl)
+        internal
+        view
+        override(Governor, GovernorTimelockControl)
         returns (address)
     {
-        return super._executor();
+        return GovernorTimelockControl._executor();
     }
 }
