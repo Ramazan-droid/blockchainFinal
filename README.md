@@ -1,57 +1,37 @@
-# Sample Hardhat 3 Beta Project (`mocha` and `ethers`)
+### Code Generation & Local Compilation
 
-This project showcases a Hardhat 3 Beta project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+Compile your GraphQL schema rules and generate native AssemblyScript types from your smart contract ABIs.
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+```bash
+# Navigate to your subgraph workspace directory
+cd subgraph
 
-## Project Overview
+# Generate AssemblyScript types
+npm run codegen
 
-This example project includes:
+# Build and compile your WebAssembly (.wasm) binary mappings
+npm run build
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+---
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
+### Authentication with Subgraph Studio
+
+Authenticate your local CLI environment with your developer profile token to grant deployment permissions.
+
+```bash
+npx graph auth --studio <deployment-key>
+
 ```
 
-### Make a deployment to Sepolia
+---
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+### Deploying to the Indexing Network
 
-To run the deployment to a local chain:
+Push your compiled schema configurations and WASM code binaries directly to the Graph Studio infrastructure.
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+```bash
+npx graph deploy --studio <slug-name>
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
 ```
