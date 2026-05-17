@@ -12,13 +12,7 @@ contract PriceOracle {
     }
 
     function getPrice() external view returns (uint256) {
-        (
-            ,
-            int256 price,
-            ,
-            uint256 updatedAt,
-
-        ) = priceFeed.latestRoundData();
+        (, int256 price,, uint256 updatedAt,) = priceFeed.latestRoundData();
 
         require(price > 0, "invalid price");
         require(block.timestamp - updatedAt <= maxDelay, "stale price");

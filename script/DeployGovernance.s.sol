@@ -9,7 +9,6 @@ import "../src/governance/Governor.sol";
 import "../src/governance/ProtocolConfig.sol";
 
 contract DeployGovernance is Script {
-
     function run() external {
         uint256 pk = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(pk);
@@ -31,19 +30,12 @@ contract DeployGovernance is Script {
         address[] memory executors = new address[](1);
         executors[0] = address(0); // open execution
 
-        TimeLock timelock = new TimeLock(
-            2 days,
-            proposers,
-            executors
-        );
+        TimeLock timelock = new TimeLock(2 days, proposers, executors);
 
         // =========================
         // 3. Deploy Governor
         // =========================
-        MyGovernor governor = new MyGovernor(
-            token,
-            timelock
-        );
+        MyGovernor governor = new MyGovernor(token, timelock);
 
         // =========================
         // 4. Fix Timelock Roles

@@ -5,16 +5,12 @@ import "forge-std/Script.sol";
 import "../src/lending/LendingPool.sol";
 
 contract DeployLending is Script {
-
     function run(address collateral, address borrow) external returns (address) {
         uint256 pk = vm.envUint("PRIVATE_KEY");
 
         vm.startBroadcast(pk);
 
-        LendingPool pool = new LendingPool(
-            collateral,
-            borrow
-        );
+        LendingPool pool = new LendingPool(collateral, borrow);
 
         vm.stopBroadcast();
 

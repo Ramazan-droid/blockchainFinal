@@ -6,7 +6,6 @@ import "../src/vault/SimpleVault.sol";
 import "../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract DeployVault is Script {
-
     function run(address asset) external returns (address) {
         uint256 pk = vm.envUint("PRIVATE_KEY");
 

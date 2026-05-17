@@ -5,7 +5,6 @@ import "forge-std/Script.sol";
 import "../src/oracle/PriceOracle.sol";
 
 contract DeployOracle is Script {
-
     function run(address feed) external returns (address) {
         uint256 pk = vm.envUint("PRIVATE_KEY");
 

@@ -6,16 +6,8 @@ import "openzeppelin-contracts/contracts/governance/extensions/GovernorCountingS
 import "openzeppelin-contracts/contracts/governance/extensions/GovernorVotes.sol";
 import "openzeppelin-contracts/contracts/governance/extensions/GovernorTimelockControl.sol";
 
-contract MyGovernor is
-    Governor,
-    GovernorCountingSimple,
-    GovernorVotes,
-    GovernorTimelockControl
-{
-    constructor(
-        IVotes token,
-        TimelockController timelock
-    )
+contract MyGovernor is Governor, GovernorCountingSimple, GovernorVotes, GovernorTimelockControl {
+    constructor(IVotes token, TimelockController timelock)
         Governor("MyGovernor")
         GovernorVotes(token)
         GovernorTimelockControl(timelock)
@@ -45,12 +37,7 @@ contract MyGovernor is
     // TIMELock REQUIRED OVERRIDES
     // =========================
 
-    function state(uint256 proposalId)
-        public
-        view
-        override(Governor, GovernorTimelockControl)
-        returns (ProposalState)
-    {
+    function state(uint256 proposalId) public view override(Governor, GovernorTimelockControl) returns (ProposalState) {
         return GovernorTimelockControl.state(proposalId);
     }
 
@@ -69,18 +56,8 @@ contract MyGovernor is
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    )
-        internal
-        override(Governor, GovernorTimelockControl)
-        returns (uint48)
-    {
-        return GovernorTimelockControl._queueOperations(
-            proposalId,
-            targets,
-            values,
-            calldatas,
-            descriptionHash
-        );
+    ) internal override(Governor, GovernorTimelockControl) returns (uint48) {
+        return GovernorTimelockControl._queueOperations(proposalId, targets, values, calldatas, descriptionHash);
     }
 
     function _executeOperations(
@@ -89,17 +66,8 @@ contract MyGovernor is
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    )
-        internal
-        override(Governor, GovernorTimelockControl)
-    {
-        GovernorTimelockControl._executeOperations(
-            proposalId,
-            targets,
-            values,
-            calldatas,
-            descriptionHash
-        );
+    ) internal override(Governor, GovernorTimelockControl) {
+        GovernorTimelockControl._executeOperations(proposalId, targets, values, calldatas, descriptionHash);
     }
 
     function _cancel(
@@ -107,25 +75,11 @@ contract MyGovernor is
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    )
-        internal
-        override(Governor, GovernorTimelockControl)
-        returns (uint256)
-    {
-        return GovernorTimelockControl._cancel(
-            targets,
-            values,
-            calldatas,
-            descriptionHash
-        );
+    ) internal override(Governor, GovernorTimelockControl) returns (uint256) {
+        return GovernorTimelockControl._cancel(targets, values, calldatas, descriptionHash);
     }
 
-    function _executor()
-        internal
-        view
-        override(Governor, GovernorTimelockControl)
-        returns (address)
-    {
+    function _executor() internal view override(Governor, GovernorTimelockControl) returns (address) {
         return GovernorTimelockControl._executor();
     }
 }
