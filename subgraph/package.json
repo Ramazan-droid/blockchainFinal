@@ -1,0 +1,16 @@
+{
+  "name": "governance-defi-subgraph",
+  "version": "1.0.0",
+  "description": "Subgraph for Governance, Lending, Vault, and AMM contracts",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.81.0"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-ts": "^0.35.0"
+  }
+}

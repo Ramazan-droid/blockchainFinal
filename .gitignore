@@ -1,6 +1,8 @@
 # Compiler files
 cache/
 out/
+subgraph/node_modules/
+lib/
 
 # Ignores development broadcast logs
 !/broadcast

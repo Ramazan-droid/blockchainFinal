@@ -1,0 +1,102 @@
+enum ProposalStatus {
+  PENDING
+  ACTIVE
+  CANCELED
+  QUEUED
+  EXECUTED
+}
+
+type TokenHolder @entity {
+  id: ID! # Wallet address
+  balance: BigInt!
+  delegate: Delegate
+}
+
+type Delegate @entity {
+  id: ID! # Wallet address
+  votingPower: BigInt!
+  tokenHolders: [TokenHolder!]! @derivedFrom(field: "delegate")
+  proposals: [Proposal!]! @derivedFrom(field: "proposer")
+  votes: [Vote!]! @derivedFrom(field: "voter")
+}
+
+type Proposal @entity {
+  id: ID! # proposalId (converted to string)
+  proposer: Delegate!
+  targets: [Bytes!]!
+  values: [BigInt!]!
+  signatures: [String!]!
+  calldatas: [Bytes!]!
+  startBlock: BigInt!
+  endBlock: BigInt!
+  description: String!
+  eta: BigInt # Populated when proposal is queued
+  status: ProposalStatus!
+  votes: [Vote!]! @derivedFrom(field: "proposal")
+  forVotes: BigInt!
+  againstVotes: BigInt!
+  abstainVotes: BigInt!
+}
+
+type Vote @entity {
+  id: ID! # combination of voter address and proposalId
+  proposal: Proposal!
+  voter: Delegate!
+  weight: BigInt!
+  support: Int! # 0 = Against, 1 = For, 2 = Abstain
+  reason: String
+}
+
+type TimelockCall @entity {
+  id: ID! # Internal operation ID hash
+  target: Bytes!
+  value: BigInt!
+  data: Bytes!
+  predecessor: Bytes!
+  delay: BigInt!
+  eta: BigInt!
+  isExecuted: Boolean!
+  isCanceled: Boolean!
+}
+
+# ==========================================
+# LENDING POOL DATA
+# ==========================================
+
+type LendingUser @entity {
+  id: ID! # Wallet address
+  collateral: BigInt!
+  debt: BigInt!
+}
+
+# ==========================================
+# VAULT DATA (ERC4626)
+# ==========================================
+
+type Vault @entity {
+  id: ID! # Vault Address
+  totalSupplyShares: BigInt!
+}
+
+type VaultUser @entity {
+  id: ID! # Combination of VaultAddress-UserAddress
+  vault: Vault!
+  shares: BigInt!
+}
+
+# ==========================================
+# AMM PAIR DATA
+# ==========================================
+
+type AMMPool @entity {
+  id: ID! # AMM Contract Address
+  reserve0: BigInt!
+  reserve1: BigInt!
+  totalSupplyLP: BigInt!
+}
+
+type AMMPosition @entity {
+  id: ID! # Combination of PoolAddress-UserAddress
+  pool: AMMPool!
+  lpBalance: BigInt!
+}
