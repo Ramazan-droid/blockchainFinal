@@ -100,3 +100,20 @@ type AMMPosition @entity {
   pool: AMMPool!
   lpBalance: BigInt!
 }
+
+# ==========================================
+# PRICE ORACLE DATA
+# ==========================================
+
+type OracleConfiguration @entity {
+  id: ID! # Адрес контракта PriceOracle
+  priceFeed: Bytes! # Адрес агрегатора Chainlink
+  maxDelay: BigInt! # Максимальная задержка обновления данных
+}
+
+type PriceRecord @entity {
+  id: ID! # Номер блока
+  price: BigInt! # Значение цены
+  timestamp: BigInt! # Временная метка блока
+  blockNumber: BigInt! # Номер блока
+}
