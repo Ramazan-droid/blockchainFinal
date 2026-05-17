@@ -1,0 +1,119 @@
+enum ProposalStatus {
+  PENDING
+  ACTIVE
+  CANCELED
+  QUEUED
+  EXECUTED
+}
+
+type TokenHolder @entity (immutable: false){
+  id: ID! # Wallet address
+  balance: BigInt!
+  delegate: Delegate
+}
+
+type Delegate @entity (immutable: false){
+  id: ID! # Wallet address
+  votingPower: BigInt!
+  tokenHolders: [TokenHolder!]! @derivedFrom(field: "delegate")
+  proposals: [Proposal!]! @derivedFrom(field: "proposer")
+  votes: [Vote!]! @derivedFrom(field: "voter")
+}
+
+type Proposal @entity (immutable: false){
+  id: ID! # proposalId (converted to string)
+  proposer: Delegate!
+  targets: [Bytes!]!
+  values: [BigInt!]!
+  signatures: [String!]!
+  calldatas: [Bytes!]!
+  startBlock: BigInt!
+  endBlock: BigInt!
+  description: String!
+  eta: BigInt # Populated when proposal is queued
+  status: ProposalStatus!
+  votes: [Vote!]! @derivedFrom(field: "proposal")
+  forVotes: BigInt!
+  againstVotes: BigInt!
+  abstainVotes: BigInt!
+}
+
+type Vote @entity (immutable: true){
+  id: ID! # combination of voter address and proposalId
+  proposal: Proposal!
+  voter: Delegate!
+  weight: BigInt!
+  support: Int! # 0 = Against, 1 = For, 2 = Abstain
+  reason: String
+}
+
+type TimelockCall @entity (immutable: true){
+  id: ID! # Internal operation ID hash
+  target: Bytes!
+  value: BigInt!
+  data: Bytes!
+  predecessor: Bytes!
+  delay: BigInt!
+  eta: BigInt!
+  isExecuted: Boolean!
+  isCanceled: Boolean!
+}
+
+# ==========================================
+# LENDING POOL DATA
+# ==========================================
+
+type LendingUser @entity (immutable: false){
+  id: ID! # Wallet address
+  collateral: BigInt!
+  debt: BigInt!
+}
+
+# ==========================================
+# VAULT DATA (ERC4626)
+# ==========================================
+
+type Vault @entity (immutable: false){
+  id: ID! # Vault Address
+  totalSupplyShares: BigInt!
+}
+
+type VaultUser @entity (immutable: false){
+  id: ID! # Combination of VaultAddress-UserAddress
+  vault: Vault!
+  shares: BigInt!
+}
+
+# ==========================================
+# AMM PAIR DATA
+# ==========================================
+
+type AMMPool @entity (immutable: false){
+  id: ID! # AMM Contract Address
+  reserve0: BigInt!
+  reserve1: BigInt!
+  totalSupplyLP: BigInt!
+}
+
+type AMMPosition @entity (immutable: false){
+  id: ID! # Combination of PoolAddress-UserAddress
+  pool: AMMPool!
+  lpBalance: BigInt!
+}
+
+# ==========================================
+# PRICE ORACLE DATA
+# ==========================================
+
+type OracleConfiguration @entity (immutable: false){
+  id: ID! # Адрес контракта PriceOracle
+  priceFeed: Bytes! # Адрес агрегатора Chainlink
+  maxDelay: BigInt! # Максимальная задержка обновления данных
+}
+
+type PriceRecord @entity (immutable: true){
+  id: ID! # Номер блока
+  price: BigInt! # Значение цены
+  timestamp: BigInt! # Временная метка блока
+  blockNumber: BigInt! # Номер блока
+}
