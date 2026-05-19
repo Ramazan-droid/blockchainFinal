@@ -7,6 +7,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  FOUNDRY_PROFILE: ci
+
 jobs:
   check:
     name: Foundry project
@@ -29,10 +32,12 @@ jobs:
         run: forge install
 
       - name: Install Slither
-        run: pip3 install slither-analyzer
-
+        run: |
+          pipx install slither-analyzer
+      
       - name: Run Slither
-        run: slither . --fail-high --solc-args "--base-path . --include-path lib"
+        run: |
+          slither . --fail-high
 
       - name: Run Forge fmt
         run: forge fmt --check
