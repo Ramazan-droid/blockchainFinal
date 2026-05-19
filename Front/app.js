@@ -6,7 +6,7 @@ const ADDRESSES = {
     PRICE_ORACLE: "0xaB67c7965230E1b18907275565A160F32a32d474",
     GOV_TOKEN: "0x4A3D90a0CC9eC9FAde8c61604fE38dd79C832d3a",
     GOVERNOR: "0x5904e6016f06dEE649883C8F89C77367dEfb3225",
-    AMM_PAIR: "0xf7739216E54Ce3a8d9bc1BA2C4F2CBf06Cf091d2", // Using factory/pair layout directly
+    AMM_PAIR: "0x7b873ef763e5770bb66450b5068065b8ab0e10b7", // Using factory/pair layout directly
     LENDING_POOL: "0x6c42543705B3D3A71E9FB3ed49dD90651DCDcb06",
     SIMPLE_VAULT: "0xE820Eba717F5f814B5e7De9BCd9Db8C49824d00e",
     TOKEN_0: "0x47A8E2E46871e69c492Fc38a556ABeBD254248F6", // Collateral Token
@@ -82,8 +82,8 @@ async function fetchSubgraphData() {
         }
 
         // 1. Process Global AMM Pool Reserves via indexer
-        if (data.ammPools && data.ammPools.length > 0) {
-            const pool = data.ammPools[0];
+        if (data.ammpools && data.ammpools.length > 0) {
+            const pool = data.ammpools[0];
             document.getElementById('subgraphAmmData').innerHTML = `
                 Global Index Res 0: ${ethers.formatEther(pool.reserve0)} <br>
                 Global Index Res 1: ${ethers.formatEther(pool.reserve1)}
